@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editar Empleado</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        form {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+        .form-group > * {
+            margin-bottom: 15px;
+        }
+        .detail-label {
+            font-weight: bold;
+            margin-top: 15px;
+            margin-left: 10px;
+        }
+        .btn {
+            margin-top: 20px;
+        }
+        .card-header {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.5rem;
+            padding: 10px 15px;
+        }
+    </style>
+</head>
+<body>
+    <form id="editEmployeeForm">
+        <div class="card-header">
+            Actualizar Informacion
+        </div>
+        <input type="hidden" id="employeeId">
+        <div class="form-group">
+            <label class="detail-label" for="Nombre">Nombre:</label>
+            <input type="text" id="Nombre" class="form-control" required>
+
+            <label class="detail-label" for="Telefono">Teléfono:</label>
+            <input type="text" id="Telefono" class="form-control" required>
+
+            <label class="detail-label" for="Email">Email:</label>
+            <input type="email" id="Email" class="form-control" required>
+
+            <label class="detail-label" for="Fecha">Fecha:</label>
+            <input type="date" id="Fecha" class="form-control" required>
+
+            <label class="detail-label" for="Ciudad">Ciudad:</label>
+            <input type="text" id="Ciudad" class="form-control" required>
+
+            <button type="submit" class="btn btn-primary btn-block">Guardar Cambios</button>
+        </div>
+    </form>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const employeeId = urlParams.get('id');
+
+            if (employeeId) {
+                fetch(`http://localhost:3000/api/employee/${employeeId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error en la respuesta del servidor');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data) {
+                            $('#employeeId').val(data.id);
+                            $('#Nombre').val(data.Nombre);
+                            $('#Telefono').val(data.Telefono);
+                            $('#Email').val(data.Email);
+                            $('#Fecha').val(data.Fecha);
+                            $('#Ciudad').val(data.Ciudad);
+                        } else {
+                            alert('Empleado no encontrado.');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+
+                $('#editEmployeeForm').on('submit', function(e) {
+                    e.preventDefault();
+
+                    let formData = {
+                        Nombre: $('#Nombre').val(),
+                        Telefono: $('#Telefono').val(),
+                        Email: $('#Email').val(),
+                        Fecha: $('#Fecha').val(),
+                        Ciudad: $('#Ciudad').val()
+                    };
+
+                    fetch(`http://localhost:3000/api/employee/${employeeId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error en la respuesta del servidor');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.message === "Empleado actualizado.") {
+                            alert('Empleado actualizado con éxito!');
+                            window.location.href = 'index.html';
+                        } else {
+                            alert('Hubo un error al actualizar el empleado.');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            } else {
+                alert('ID de empleado no proporcionado.');
+            }
+        });
+    </script>
+</body>
+</html>
+

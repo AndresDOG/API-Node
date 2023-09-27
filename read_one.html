@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detalle del Empleado</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        .details-container {
+            max-width: 600px;
+            margin: 50px auto;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #4CAF50;
+            color: white;
+            font-size: 1.5rem;
+            padding: 10px 15px;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            margin-top: 15px;
+            margin-left: 10px;
+        }
+
+        p {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="details-container">
+        <div class="card-header">
+            Detalles del Empleado
+        </div>
+        <div class="detail-label">Nombre:</div>
+        <p id="Nombre"></p>
+        <div class="detail-label">Teléfono:</div>
+        <p id="Telefono"></p>
+        <div class="detail-label">Email:</div>
+        <p id="Email"></p>
+        <div class="detail-label">Fecha:</div>
+        <p id="Fecha"></p>
+        <div class="detail-label">Ciudad:</div>
+        <p id="Ciudad"></p>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Obtener el ID desde la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const employeeId = urlParams.get('id');
+
+            if (employeeId) {
+                fetch(`http://localhost:3000/api/employee/${employeeId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data) {
+                            $('#Nombre').text(data.Nombre);
+                            $('#Telefono').text(data.Telefono);
+                            $('#Email').text(data.Email);
+                            $('#Fecha').text(data.Fecha);
+                            $('#Ciudad').text(data.Ciudad);
+                        } else {
+                            alert('Empleado no encontrado.');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                alert('ID de empleado no proporcionado.');
+            }
+        });
+    </script>
+
+</body>
+</html>
